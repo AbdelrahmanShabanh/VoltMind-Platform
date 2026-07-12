@@ -1,10 +1,4 @@
-"""
-Smart Grid Load Predictor - Auto-Reactive Version
-=============================================
-Advanced XGBoost-powered Streamlit app with stunning visuals.
-Features: Reactive UI (no predict button needed), Glassmorphism, 
-animated metrics, and exact feature alignment.
-"""
+
 
 import streamlit as st
 import pandas as pd
@@ -251,7 +245,7 @@ def classify_load(kw: float) -> tuple[str, str, str]:
     if kw < 1.5: return "Low Demand", "tag-low", "🟢"
     elif kw < 3.5: return "Moderate Demand", "tag-medium", "🟡"
     return "High Demand", "tag-high", "🔴"
-
+# bya5od numeric data y7wlha graphs
 def build_gauge_chart(value: float, max_val: float = 6.0) -> go.Figure:
     fig = go.Figure(go.Indicator(
         mode="gauge+number", value=round(value, 3),
@@ -351,7 +345,15 @@ with st.sidebar:
     st.markdown('<p class="sidebar-title"><span class="sidebar-icon">📊</span>Historical Data</p>', unsafe_allow_html=True)
     lag_1 = st.slider("Lag-1 Power (kW)", min_value=0.0, max_value=12.0, value=1.2, step=0.01)
     lag_2 = st.slider("Lag-2 Power (kW)", min_value=0.0, max_value=12.0, value=1.1, step=0.01)
-    rolling_mean = st.slider("Rolling Mean-3 (kW)", min_value=0.0, max_value=12.0, value=1.15, step=0.01)
+    
+    # Auto-calculated rolling mean
+    rolling_mean = (lag_1 + lag_2) / 2.0
+    st.markdown(f"""
+    <div style="background: rgba(30, 40, 60, 0.8); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-top: 10px;">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Rolling Mean-3 (Auto)</div>
+        <div style="font-size: 1.2rem; color: var(--accent-cyan); font-weight: 700;">{rolling_mean:.2f} kW</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown('<div class="divider" style="margin:20px 0;"></div>', unsafe_allow_html=True)
     st.markdown(f'<p style="text-align:center; font-size:0.7rem; color:{TEXT_SECONDARY}; line-height:1.6;"><strong>Model: XGBoost</strong><br>Features: 9 | Target: Active Power</p>', unsafe_allow_html=True)
@@ -389,7 +391,7 @@ for col, (icon, label, value) in zip([col1, col2, col3, col4], card_items):
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ────────────────────────────── REAL-TIME PREDICTION ───────────────────────────
-# We removed the predict button! The app now updates automatically and instantly.
+# We removed the predict button The app now updates automatically and instantly
 
 raw_features = {
     "meter_encoded": meter_encoded,
